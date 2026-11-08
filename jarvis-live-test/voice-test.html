@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jarvis · Live voice test</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 32px 18px;
+        background: #020b13;
+        color: #e4eef7;
+        font-family: system-ui, sans-serif;
+      }
+      main {
+        max-width: 850px;
+        margin: auto;
+      }
+      h1 {
+        margin: 12px 0;
+        font-size: clamp(24px, 5vw, 34px);
+      }
+      h2 {
+        margin: 0;
+        font-size: 17px;
+      }
+      p {
+        color: #a9bed0;
+        line-height: 1.7;
+      }
+      .tag {
+        color: #22d3ee;
+        font-size: 12px;
+        letter-spacing: 0.12em;
+      }
+      .panel {
+        background: #071726;
+        border: 1px solid #1b3b50;
+        border-radius: 18px;
+        padding: 22px;
+        margin-top: 22px;
+      }
+      .row {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .between {
+        justify-content: space-between;
+      }
+      label {
+        font-size: 14px;
+        color: #b9cedd;
+      }
+      select,
+      textarea {
+        font: inherit;
+        color: #e4eef7;
+        background: #03121f;
+        border: 1px solid #315166;
+        border-radius: 9px;
+        padding: 10px;
+      }
+      textarea {
+        width: 100%;
+        margin: 10px 0;
+        resize: vertical;
+      }
+      button {
+        font: inherit;
+        border: 1px solid #34576a;
+        padding: 11px 16px;
+        border-radius: 10px;
+        cursor: pointer;
+        background: #102d40;
+        color: #e4eef7;
+      }
+      button.primary {
+        background: #22d3ee;
+        border-color: #22d3ee;
+        color: #022133;
+        font-weight: 650;
+      }
+      button:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+      button:focus-visible,
+      select:focus-visible,
+      textarea:focus-visible {
+        outline: 2px solid #22d3ee;
+        outline-offset: 3px;
+      }
+      #status {
+        color: #5eead4;
+        font-size: 14px;
+      }
+      #notice {
+        min-height: 24px;
+        margin-bottom: 0;
+        font-size: 13px;
+      }
+      #error {
+        color: #fecaca;
+        background: #3e1420;
+        border-radius: 10px;
+        padding: 12px;
+        overflow-wrap: anywhere;
+      }
+      #messages {
+        height: 320px;
+        overflow-y: auto;
+        margin: 18px 0;
+        scrollbar-width: thin;
+      }
+      .message {
+        max-width: 92%;
+        margin: 12px 0;
+        padding: 12px 15px;
+        background: #10293a;
+        border-radius: 13px;
+      }
+      .message.user {
+        margin-left: auto;
+        background: #06435b;
+      }
+      .message strong {
+        font-size: 12px;
+        color: #67e8f9;
+      }
+      .message p {
+        margin: 6px 0 0;
+        color: #e4eef7;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+      }
+      .hint {
+        color: #89a9bd;
+        font-size: 13px;
+      }
+      @media (max-width: 500px) {
+        body {
+          padding: 20px 12px;
+        }
+        .panel {
+          padding: 16px;
+        }
+        .controls button {
+          flex: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <span class="tag">JARVIS / SEPARATE TEST APP</span>
+      <h1>Gemini Live voice test</h1>
+      <p>
+        Voice සහ transcript පරීක්ෂා කරන්න. මේ test page එක SmartInventory
+        database එකට සම්බන්ධ නැහැ.
+      </p>
+      <section class="panel" aria-labelledby="call-title">
+        <div class="row between">
+          <h2 id="call-title">Voice session</h2>
+          <span id="status" role="status">Checking setup…</span>
+        </div>
+        <p id="setup" class="hint">Checking the test server…</p>
+        <div class="row">
+          <label for="language">Language</label>
+          <select id="language">
+            <option value="si">සිංහල</option>
+            <option value="en">English</option>
+          </select>
+        </div>
+        <div class="row controls" style="margin-top: 20px">
+          <button id="start" class="primary" disabled>Start test call</button>
+          <button id="mute" disabled>Mute mic</button>
+          <button id="end" disabled>End call</button>
+        </div>
+        <p id="notice">
+          A test call ends after five minutes. Audio is sent to Gemini while
+          connected.
+        </p>
+        <p id="error" role="alert" hidden></p>
+      </section>
+      <section class="panel" aria-labelledby="transcript-title">
+        <div class="row between">
+          <h2 id="transcript-title">Live transcript</h2>
+          <button id="clear" type="button">Clear screen</button>
+        </div>
+        <div
+          id="messages"
+          role="log"
+          aria-label="Conversation transcript"
+          aria-live="polite"
+        >
+          <p id="empty">Start the call, then say “ආයුබෝවන් Jarvis”.</p>
+        </div>
+        <form id="question-form">
+          <label for="question">Optional text message during the call</label>
+          <textarea id="question" rows="2" maxlength="2000" disabled></textarea>
+          <div class="row between">
+            <span class="hint">Start a new call for a fresh conversation.</span>
+            <button id="send" type="submit" disabled>Send</button>
+          </div>
+        </form>
+      </section>
+    </main>
+    <script type="module">
+      import { GeminiLiveAudio } from "./testAudio.js";
+
+      const $ = (id) => document.getElementById(id);
+      let client = null;
+      let ready = false;
+      let configured = false;
+      let muted = false;
+      let speaking = false;
+      let lastMessage = null;
+
+      function controls() {
+        $("start").disabled = Boolean(client) || !configured;
+        $("language").disabled = Boolean(client);
+        $("end").disabled = !client;
+        $("mute").disabled = !ready;
+        $("question").disabled = !ready;
+        $("send").disabled = !ready;
+        $("mute").textContent = muted ? "Unmute mic" : "Mute mic";
+        $("status").textContent = !client
+          ? "Disconnected"
+          : !ready
+            ? "Connecting…"
+            : speaking
+              ? "Jarvis speaking"
+              : muted
+                ? "Mic muted"
+                : "Listening";
+      }
+
+      function showError(text) {
+        $("error").textContent = text;
+        $("error").hidden = !text;
+      }
+
+      function transcript(role, text) {
+        $("empty")?.remove();
+        if (!lastMessage || lastMessage.role !== role) {
+          const box = document.createElement("article");
+          box.className = "message " + (role === "user" ? "user" : "assistant");
+          const title = document.createElement("strong");
+          title.textContent = role === "user" ? "You" : "Jarvis";
+          const body = document.createElement("p");
+          box.append(title, body);
+          $("messages").append(box);
+          lastMessage = { role, body };
+          while ($("messages").children.length > 60)
+            $("messages").firstElementChild.remove();
+        }
+        lastMessage.body.textContent = (
+          lastMessage.body.textContent + text
+        ).slice(-12000);
+        $("messages").scrollTop = $("messages").scrollHeight;
+      }
+
+      $("start").addEventListener("click", () => {
+        if (client) return;
+        showError("");
+        ready = false;
+        muted = false;
+        speaking = false;
+        lastMessage = null;
+        $("messages").replaceChildren();
+        $("notice").textContent = "Allow microphone access to start the test.";
+        const connection = new GeminiLiveAudio({
+          onEvent(event) {
+            if (client !== connection) return;
+            if (event.type === "ready") {
+              ready = true;
+              $("notice").textContent =
+                "Connected. Speak naturally; headphones can reduce echo.";
+            } else if (event.type === "transcript") {
+              transcript(event.role, event.text);
+            } else if (
+              event.type === "turn_complete" ||
+              event.type === "interrupted"
+            ) {
+              lastMessage = null;
+            } else if (event.type === "notice") {
+              $("notice").textContent = event.text;
+            }
+            controls();
+          },
+          onPlayback(active) {
+            if (client !== connection) return;
+            speaking = active;
+            controls();
+          },
+          onError(text) {
+            if (client === connection) showError(text);
+          },
+          onClose() {
+            if (client !== connection) return;
+            client = null;
+            ready = false;
+            speaking = false;
+            muted = false;
+            $("notice").textContent =
+              "Call ended. Start again for a new conversation.";
+            controls();
+          },
+        });
+        client = connection;
+        controls();
+        connection.start($("language").value);
+      });
+
+      $("mute").addEventListener("click", () => {
+        if (!ready) return;
+        muted = !muted;
+        client.setMuted(muted);
+        controls();
+      });
+      $("end").addEventListener("click", () => client?.stop());
+      $("clear").addEventListener("click", () => {
+        $("messages").replaceChildren();
+        lastMessage = null;
+        $("notice").textContent =
+          "Screen cleared. This does not reset the current conversation.";
+      });
+      $("question-form").addEventListener("submit", (event) => {
+        event.preventDefault();
+        const text = $("question").value.trim();
+        if (!ready || !text) return;
+        client.clearPlayback();
+        lastMessage = null;
+        if (client.send({ type: "text", text })) $("question").value = "";
+      });
+      window.addEventListener("pagehide", () => client?.stop());
+
+      try {
+        const response = await fetch("/health");
+        if (!response.ok) throw new Error("Test server health check failed.");
+        const health = await response.json();
+        configured = health.key_configured;
+        $("setup").textContent =
+          "Model: " + health.model + " · Inventory disconnected · Port 8001";
+        if (!configured)
+          showError("Add your key to .env.test, then refresh this page.");
+      } catch (error) {
+        showError(error.message);
+      }
+      controls();
+    </script>
+  </body>
+</html>

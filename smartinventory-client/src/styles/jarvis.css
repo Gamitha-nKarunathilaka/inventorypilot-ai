@@ -1,0 +1,41 @@
+/* Keep the Tailwind import/directives in your existing index.css. */
+/* These rules also remove the default Vite demo's centered page sizing. */
+body {
+  margin: 0;
+  min-width: 320px;
+  display: block;
+  background: #020b13;
+}
+
+#root {
+  width: 100%;
+  max-width: none;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
+
+.jarvis-app {
+  font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+.jarvis-app button:focus-visible,
+.jarvis-app a:focus-visible {
+  outline: 2px solid #67e8f9;
+  outline-offset: 4px;
+}
+
+.jarvis-panel {
+  border: 1px solid rgb(8 145 178 / 28%);
+  border-radius: 16px;
+  background: linear-gradient(145deg, #051723, #020e18);
+}
+
+.jarvis-grid {
+  background-image:
+    radial-gradient(ellipse at center, rgb(6 182 212 / 9%), transparent 65%),
+    linear-gradient(rgb(6 182 212 / 3%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(6 182 212 / 3%) 1px, transparent 1px);
+  background-size: auto, 32px 32px, 32px 32px;
+}

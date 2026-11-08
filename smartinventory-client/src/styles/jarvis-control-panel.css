@@ -1,0 +1,758 @@
+.jcp {
+  --jcp-cyan: #12dfff;
+
+  position: relative;
+  container-type: inline-size;
+  overflow: hidden;
+  border: 1px solid #0b5270;
+  border-radius: 18px;
+  color: #e0f4ff;
+
+  background:
+    radial-gradient(
+      ellipse at 50% 38%,
+      #032337,
+      #020b13 65%
+    );
+
+  box-shadow:
+    inset 0 0 40px #00bfff08,
+    0 20px 60px #0004;
+}
+
+/* Header */
+
+.jcp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px;
+  border-bottom: 1px solid #0b3b50;
+  background: #041522a6;
+}
+
+.jcp-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.jcp-brand h2 {
+  margin: 0;
+  font-size: 23px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--jcp-cyan);
+}
+
+.jcp-brand p {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: #8aadc1;
+}
+
+.jcp-mark {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border: 2px solid var(--jcp-cyan);
+  border-radius: 50%;
+  outline: 1px dashed #079bbc;
+  outline-offset: 5px;
+
+  box-shadow:
+    inset 0 0 0 6px #03111d,
+    inset 0 0 0 7px #138db0,
+    0 0 18px #00c8ff30;
+}
+
+.jcp-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #7cc6dd;
+}
+
+.jcp-badge i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.jcp:not([data-mode="idle"]) .jcp-badge {
+  color: var(--jcp-cyan);
+}
+
+/* Face and circular display */
+
+.jcp-scene {
+  position: relative;
+  height: 390px;
+  isolation: isolate;
+}
+
+.jcp-radar {
+  position: absolute;
+  top: 46%;
+  left: 50%;
+  width: min(85%, 360px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border: 1px solid #127591;
+  border-radius: 50%;
+
+  background:
+    repeating-conic-gradient(
+      from 0deg,
+      #0c77913d 0deg 1deg,
+      transparent 1deg 10deg
+    );
+
+  box-shadow:
+    0 0 0 7px #00bfff07,
+    0 0 0 8px #0a485c;
+}
+
+.jcp-orbit {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.jcp-orbit-outer {
+  inset: -18px;
+  border: 1px dashed #1685a6;
+  opacity: 0.6;
+}
+
+.jcp-orbit-inner {
+  inset: 14px;
+  border: 2px solid #0c5875;
+  border-top-color: #16dfff;
+  border-bottom-color: #109dbf;
+}
+
+.jcp[data-mode="thinking"] .jcp-orbit-inner {
+  animation: jcp-orbit 5s linear infinite;
+}
+
+.jcp-face {
+  position: absolute;
+  inset: 0 5% 24px;
+  z-index: 1;
+}
+
+.jcp-face > div {
+  height: 100%;
+  background: transparent;
+}
+
+.jcp-face [role="img"] {
+  height: 100%;
+}
+
+.jcp-face canvas {
+  mask-image:
+    radial-gradient(
+      ellipse at 50% 45%,
+      black 38%,
+      #000e 55%,
+      transparent 75%
+    );
+}
+
+/* The panel provides its own status indicator. */
+
+.jcp-face > div > span {
+  display: none;
+}
+
+.jcp-face > div > p {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0;
+  font-size: 9px;
+  z-index: 4;
+}
+
+/* Assistant states */
+
+.jcp-states {
+  position: absolute;
+  z-index: 3;
+  bottom: 0;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.jcp-states li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #719db4;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 9px;
+}
+
+.jcp-states i {
+  width: 6px;
+  height: 6px;
+  border: 1px solid #176b8c;
+  border-radius: 50%;
+  background: #07324b;
+}
+
+.jcp-states [aria-current="true"] {
+  color: #30e5ff;
+}
+
+.jcp-states [aria-current="true"] i {
+  background: #1be5ff;
+  border-color: #1be5ff;
+  box-shadow: 0 0 12px #00ddff;
+}
+
+/* Decorative voice animation */
+
+.jcp-signal {
+  position: absolute;
+  z-index: 3;
+  right: 16px;
+  bottom: 100px;
+  width: 100px;
+  border: 1px solid #0c6382;
+  border-radius: 12px 3px;
+  padding: 12px 8px;
+  background: #021420e6;
+}
+
+.jcp-signal > span {
+  display: block;
+  color: #3ddfff;
+  font-size: 10px;
+  text-align: center;
+}
+
+.jcp-wave {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 45px;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.jcp-wave i {
+  width: 2px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  background: #22dfff;
+  transform: scaleY(0.2);
+  opacity: 0.5;
+}
+
+.jcp[data-mode="listening"] .jcp-wave i,
+.jcp[data-mode="speaking"] .jcp-wave i {
+  animation: jcp-wave 0.8s ease-in-out infinite alternate;
+  opacity: 1;
+}
+
+.jcp[data-mode="thinking"] .jcp-wave {
+  opacity: 0.55;
+}
+
+/* Holographic base */
+
+.jcp-platform {
+  position: absolute;
+  left: 14%;
+  right: 14%;
+  bottom: 36px;
+  height: 45px;
+  border: 2px solid #21dcff;
+  border-radius: 50%;
+  pointer-events: none;
+
+  box-shadow:
+    0 0 15px #00bfff55,
+    inset 0 0 20px #00bfff22;
+}
+
+.jcp-platform::before,
+.jcp-platform::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid #0689b1;
+}
+
+.jcp-platform::before {
+  inset: -9px -23px;
+  opacity: 0.5;
+}
+
+.jcp-platform::after {
+  inset: 7px 28px;
+  box-shadow: 0 0 10px #00bfff55;
+}
+
+.jcp-caption {
+  margin: 14px 0 0;
+  text-align: center;
+  color: #73d5e8;
+  font-size: 12px;
+  letter-spacing: 0.03em;
+}
+
+/* Microphone controls */
+
+.jcp-control-area {
+  padding: 18px 20px 20px;
+}
+
+.jcp-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+}
+
+.jcp-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #b4d9eb;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.jcp-button-circle {
+  display: grid;
+  place-items: center;
+  width: 50px;
+  height: 50px;
+  border: 1px solid #2584a4;
+  border-radius: 50%;
+
+  background:
+    linear-gradient(
+      145deg,
+      #082b40,
+      #020e18
+    );
+
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.jcp-button-circle svg {
+  width: 23px;
+  height: 23px;
+}
+
+.jcp-action:enabled:hover .jcp-button-circle {
+  border-color: #3be6ff;
+  box-shadow: 0 0 20px #00cfff25;
+}
+
+.jcp-action:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.jcp-action:focus-visible {
+  outline: 2px solid #67e8f9;
+  outline-offset: 7px;
+  border-radius: 8px;
+}
+
+.jcp-speak {
+  color: #e1faff;
+}
+
+.jcp-speak .jcp-button-circle {
+  width: 100px;
+  height: 100px;
+  border: 2px solid #70edff;
+  outline: 1px solid #0b78a8;
+  outline-offset: 6px;
+
+  background:
+    radial-gradient(
+      circle at 40% 28%,
+      #16c9ff,
+      #0064d9 60%,
+      #002856
+    );
+
+  box-shadow:
+    inset 0 0 20px #66ecff55,
+    0 0 30px #00aeff55;
+}
+
+.jcp-speak .jcp-button-circle svg {
+  width: 40px;
+  height: 40px;
+}
+
+.jcp-voice[data-phase="listening"] .jcp-speak:disabled {
+  opacity: 1;
+}
+
+.jcp-voice[data-phase="listening"] .jcp-speak .jcp-button-circle {
+  animation: jcp-mic 1.5s ease-in-out infinite;
+}
+
+/* Language and messages */
+
+.jcp-voice-options {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #0b3b50;
+  font-size: 11px;
+  color: #93b6c8;
+}
+
+.jcp-voice-options label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.jcp-voice-options select {
+  min-height: 36px;
+  border: 1px solid #15506a;
+  border-radius: 7px;
+  padding: 4px 8px;
+  background: #051b29;
+  color: #e0f4ff;
+}
+
+.jcp-voice-options select:focus-visible {
+  outline: 2px solid #67e8f9;
+  outline-offset: 3px;
+}
+
+.jcp-voice-options select:disabled {
+  opacity: 0.5;
+}
+
+.jcp-voice-options [role="status"] {
+  color: #67cfe5;
+}
+
+.jcp-hint {
+  margin: 14px 0 0;
+  text-align: center;
+  color: #86a5b7;
+  font-size: 11px;
+  line-height: 1.8;
+}
+
+.jcp-error {
+  margin: 12px 0 0;
+  padding: 12px;
+  border: 1px solid #8f3747;
+  border-radius: 9px;
+  background: #38121b;
+  color: #ffc3cc;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* Adapt to the width of the panel. */
+
+@container (min-width: 470px) {
+  .jcp-states {
+    left: 20px;
+    right: auto;
+    top: 90px;
+    bottom: auto;
+    flex-direction: column;
+    gap: 19px;
+  }
+
+  .jcp-states li {
+    font-size: 10px;
+  }
+
+  .jcp-face {
+    inset: 0 9% 24px;
+  }
+}
+
+@container (max-width: 380px) {
+  .jcp-header {
+    padding: 17px 14px;
+  }
+
+  .jcp-mark {
+    display: none;
+  }
+
+  .jcp-brand h2 {
+    font-size: 20px;
+  }
+
+  .jcp-scene {
+    height: 330px;
+  }
+
+  .jcp-radar {
+    width: 86%;
+  }
+
+  .jcp-signal {
+    display: none;
+  }
+
+  .jcp-control-area {
+    padding: 18px 14px;
+  }
+
+  .jcp-buttons {
+    gap: 24px;
+  }
+
+  .jcp-speak .jcp-button-circle {
+    width: 88px;
+    height: 88px;
+  }
+
+  .jcp-states {
+    gap: 8px;
+  }
+
+  .jcp-states li {
+    font-size: 8px;
+  }
+}
+
+/* Animations */
+
+@keyframes jcp-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes jcp-wave {
+  from {
+    transform: scaleY(0.25);
+  }
+
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes jcp-mic {
+  50% {
+    box-shadow:
+      inset 0 0 20px #66ecff55,
+      0 0 45px #00aeff99,
+      0 0 0 12px #00bfff0d;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jcp *,
+  .jcp *::before,
+  .jcp *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Compact Overview: resize the scene and keep controls in normal flow. */
+
+.jov-dashboard .jov-assistant-host {
+  height: auto;
+  min-height: 0;
+  max-height: none;
+  align-self: start;
+}
+
+.jcp.jcp--compact,
+.jov-assistant-host > .jcp.jcp--compact {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+  width: 100%;
+  min-width: 0;
+  height: auto;
+  min-height: 0;
+  max-height: none;
+  overflow: visible;
+}
+
+.jcp--compact > * {
+  flex-shrink: 0;
+}
+
+.jcp--compact .jcp-header {
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: inherit;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.jcp--compact .jcp-brand {
+  min-width: 0;
+  gap: 10px;
+}
+
+.jcp--compact .jcp-brand h2 {
+  font-size: 18px;
+  line-height: 1.3;
+  letter-spacing: 0.14em;
+}
+
+.jcp--compact .jcp-brand p {
+  margin-top: 3px;
+  line-height: 1.4;
+}
+
+.jcp--compact .jcp-mark {
+  width: 26px;
+  height: 26px;
+  outline-offset: 3px;
+}
+
+.jcp--compact .jcp-scene {
+  height: 200px;
+  min-height: 200px;
+}
+
+.jcp--compact .jcp-radar {
+  top: 44%;
+  width: 150px;
+}
+
+.jcp--compact .jcp-face {
+  inset: 0 3% 24px;
+}
+
+.jcp--compact .jcp-face > div,
+.jcp--compact .jcp-face [role="img"] {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  max-height: none;
+}
+
+.jcp--compact .jcp-face > div > button {
+  top: 8px;
+  right: 8px;
+  padding: 6px 8px;
+  font-size: 11px;
+}
+
+.jcp--compact .jcp-states {
+  top: auto;
+  right: 10px;
+  bottom: 0;
+  left: 10px;
+  flex-direction: row;
+  gap: 8px 12px;
+}
+
+.jcp--compact .jcp-states li {
+  gap: 4px;
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+.jcp--compact .jcp-signal {
+  display: none;
+}
+
+.jcp--compact .jcp-platform {
+  left: 22%;
+  right: 22%;
+  bottom: 30px;
+  height: 20px;
+}
+
+.jcp--compact .jcp-caption {
+  margin: 8px 12px 0;
+  line-height: 1.5;
+}
+
+.jcp--compact .jcp-control-area {
+  padding: 10px 16px 12px;
+}
+
+.jcp--compact .jcp-buttons {
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.jcp--compact .jcp-action {
+  gap: 6px;
+}
+
+.jcp--compact .jcp-button-circle {
+  width: 44px;
+  height: 44px;
+}
+
+.jcp--compact .jcp-button-circle svg {
+  width: 20px;
+  height: 20px;
+}
+
+.jcp--compact .jcp-speak .jcp-button-circle {
+  width: 56px;
+  height: 56px;
+  outline-offset: 3px;
+}
+
+.jcp--compact .jcp-speak .jcp-button-circle svg {
+  width: 27px;
+  height: 27px;
+}
+
+.jcp--compact .jcp-voice-options {
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+}
+
+.jcp--compact .jcp-hint {
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+.jcp--compact .jcp-error {
+  margin-top: 10px;
+  padding: 10px;
+  overflow-wrap: anywhere;
+}

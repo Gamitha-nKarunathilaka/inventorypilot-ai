@@ -1,0 +1,223 @@
+.jlv-mode {
+  display: flex;
+  gap: 5px;
+  padding: 5px;
+  border: 1px solid #194354;
+  border-radius: 12px;
+  background: #051b28;
+}
+
+.jlv-mode button {
+  flex: 1;
+  padding: 9px 12px;
+  border: 0;
+  border-radius: 8px;
+  color: #9bb3c8;
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.jlv-mode button[aria-pressed="true"] {
+  color: #072531;
+  background: #22d3ee;
+  font-weight: 700;
+}
+
+.jlv-mode button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.jlv-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  min-width: 0;
+  min-height: 420px;
+  max-height: 720px;
+  padding: 20px;
+  color: #e4f2fb;
+  background: #061b29;
+  border: 1px solid #194354;
+  border-radius: 16px;
+}
+
+.jlv-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.jlv-status {
+  color: #93a9ba;
+  font-size: 11px;
+}
+
+.jlv-status.is-active {
+  color: #5eead4;
+}
+
+.jlv-status.is-active::before {
+  display: inline-block;
+  content: "";
+  width: 6px;
+  height: 6px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.jlv-help,
+.jlv-footer {
+  margin: 0;
+  color: #a1b8c9;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.jlv-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.jlv-controls button,
+.jlv-controls select {
+  padding: 9px 12px;
+  color: #ddecf6;
+  background: #102c3c;
+  border: 1px solid #315267;
+  border-radius: 9px;
+  font: inherit;
+  font-size: 12px;
+}
+
+.jlv-controls .jlv-start {
+  background: #0ccbe8;
+  border-color: #0ccbe8;
+  color: #052e3c;
+  font-weight: 700;
+}
+
+.jlv-controls button {
+  cursor: pointer;
+}
+
+.jlv-controls :disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.jlv-mode button:focus-visible,
+.jlv-controls :focus-visible {
+  outline: 2px solid #a5f3fc;
+  outline-offset: 3px;
+}
+
+.jlv-error,
+.jlv-notice {
+  margin: 0;
+  padding: 12px;
+  border-radius: 9px;
+  font-size: 12px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.jlv-error {
+  color: #fecdd3;
+  background: #421c2b;
+}
+
+.jlv-notice {
+  color: #c0e6f4;
+  background: #113344;
+}
+
+.jlv-messages {
+  flex: 1;
+  min-height: 120px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #315267 transparent;
+}
+
+.jlv-message {
+  margin: 0 20px 12px 0;
+  padding: 11px 13px;
+  border-radius: 12px;
+  background: #102c3c;
+}
+
+.jlv-message--user {
+  margin-right: 0;
+  margin-left: 20px;
+  background: #0369a1;
+}
+
+.jlv-message--result {
+  border: 1px solid #1b625a;
+  background: #0b302f;
+}
+
+.jlv-message > span {
+  font-size: 10px;
+  color: #9bd8eb;
+}
+
+.jlv-message p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.7;
+}
+
+.jlv-empty {
+  padding: 30px 5px;
+  color: #809db1;
+  font-size: 13px;
+  text-align: center;
+}
+
+.jlv-footer {
+  border-top: 1px solid #173a4b;
+  padding-top: 10px;
+  font-size: 10px;
+}
+
+.jlv-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.inventory-assistant > .jlv-mode {
+  margin: 0 18px 14px;
+  flex-shrink: 0;
+}
+
+.inventory-assistant__chat > .jlv-panel {
+  height: 100%;
+  min-height: 0;
+  max-height: none;
+  border: 0;
+  border-radius: 0;
+  padding-top: 10px;
+}
+
+.jlv-head-header {
+  padding: 18px 20px;
+  color: #67e8f9;
+  font-weight: 600;
+  border-bottom: 1px solid #194354;
+}
