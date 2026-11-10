@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import JarvisControlPanel from "./JarvisControlPanel.jsx";
+import StockDocumentImport from "./StockDocumentImport.jsx";
 import { GeminiLiveAudio } from "../lib/geminiLiveAudio.js";
 
 const fields = {
@@ -16,11 +17,12 @@ const fields = {
 export default function GeminiLivePanel({
   showHead = false,
   onInventoryChanged,
+  intro = "Start a call and ask about your inventory. Each new call starts a new conversation.",
 }) {
   const id = useId();
   const audioRef = useRef(null);
   const callbackRef = useRef(onInventoryChanged);
-  const transcriptIds = useRef({});
+  const replyId = useRef(null);
   const writingRef = useRef(false);
   const mountedRef = useRef(false);
   const logRef = useRef(null);
@@ -50,9 +52,10 @@ export default function GeminiLivePanel({
     if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight;
   }, [messages, approval]);
 
-  function addTranscript(role, text) {
-    const messageId = transcriptIds.current[role] || crypto.randomUUID();
-    transcriptIds.current[role] = messageId;
+  function appendReply(text) {
+    if (typeof text !== "string" || !text) return;
+    const messageId = replyId.current || crypto.randomUUID();
+    replyId.current = messageId;
     setMessages((previous) => {
       const found = previous.some((message) => message.id === messageId);
       if (found)
@@ -61,7 +64,7 @@ export default function GeminiLivePanel({
             ? { ...message, text: (message.text + text).slice(-12000) }
             : message,
         );
-      return [...previous, { id: messageId, role, text }].slice(-60);
+      return [...previous, { id: messageId, text }].slice(-60);
     });
   }
 
@@ -71,8 +74,8 @@ export default function GeminiLivePanel({
       setConnection("connected");
       setStatus("listening");
       setNotice("Connected. Speak naturally; you can interrupt Jarvis.");
-    } else if (event.type === "transcript") {
-      addTranscript(event.role, event.text);
+    } else if (event.type === "transcript" && event.role === "assistant") {
+      appendReply(event.text);
     } else if (event.type === "working") {
       setStatus("thinking");
       if (
@@ -102,7 +105,7 @@ export default function GeminiLivePanel({
         );
       }
     } else if (event.type === "interrupted" || event.type === "turn_complete") {
-      transcriptIds.current = {};
+      replyId.current = null;
       if (!audioRef.current?.sources.size) {
         setStatus(audioRef.current?.muted ? "idle" : "listening");
       }
@@ -120,7 +123,7 @@ export default function GeminiLivePanel({
     setMuted(false);
     setWriting(false);
     writingRef.current = false;
-    transcriptIds.current = {};
+    replyId.current = null;
     setConnection("connecting");
     setStatus("thinking");
     const audio = new GeminiLiveAudio({
@@ -180,7 +183,6 @@ export default function GeminiLivePanel({
       audioRef.current?.ready &&
       audioRef.current.send({ type: "text", text })
     ) {
-      transcriptIds.current = {};
       setInput("");
       setStatus("thinking");
     }
@@ -281,24 +283,25 @@ export default function GeminiLivePanel({
         <div
           ref={logRef}
           role="log"
-          aria-label="Live transcripts"
+          aria-label="Jarvis replies"
           className="max-h-[360px] min-h-[180px] flex-1 space-y-3 overflow-y-auto p-4 [overflow-wrap:anywhere]"
         >
           {!messages.length && (
             <p className="text-sm leading-6 text-slate-400">
-              Start a call and ask about your inventory. Each new call starts a
-              new conversation.
+              {intro}
             </p>
           )}
           {messages.map((message) => (
             <div
               key={message.id}
-              className={`max-w-[95%] rounded-xl p-3 text-sm leading-6 ${message.role === "user" ? "ml-auto bg-cyan-950" : "mr-auto bg-slate-800"}`}
+              className="mr-auto max-w-[95%] rounded-xl bg-slate-800 p-3 text-sm leading-6"
             >
               <p className="mb-1 text-xs text-cyan-300">
-                {message.role === "user" ? "You" : "Jarvis"}
+                Jarvis
               </p>
-              <p className="whitespace-pre-wrap">{message.text}</p>
+              <p className="whitespace-pre-wrap">
+                {message.text}
+              </p>
             </div>
           ))}
         </div>
@@ -376,7 +379,15 @@ export default function GeminiLivePanel({
             Send
           </button>
         </form>
+        <div className="shrink-0 border-t border-cyan-900/50 p-3">
+          <StockDocumentImport
+            onInventoryChanged={onInventoryChanged}
+            disabled={connection === "connecting" || Boolean(approval) || writing}
+          />
+        </div>
       </section>
     </div>
   );
 }
+
+

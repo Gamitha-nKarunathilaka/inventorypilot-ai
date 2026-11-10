@@ -228,11 +228,8 @@ export default function JarvisHead({
     );
 
     const head = new THREE.Group();
-    const halo = new THREE.Group();
 
-    scene.add(head, halo);
-
-    halo.position.z = -1.5;
+    scene.add(head);
 
     scene.add(
       new THREE.AmbientLight(0x7adfff, 0.7)
@@ -271,28 +268,6 @@ export default function JarvisHead({
       transparent: true,
       opacity: 0.08,
       depthWrite: false,
-    });
-
-    const ringMaterial = new THREE.MeshBasicMaterial({
-      color: 0x16bfdc,
-      transparent: true,
-      opacity: 0.45,
-    });
-
-    [1.68, 1.88, 2.08].forEach((radius, index) => {
-      const ring = new THREE.Mesh(
-        new THREE.TorusGeometry(
-          radius,
-          0.012,
-          6,
-          100
-        ),
-        ringMaterial
-      );
-
-      ring.rotation.y = index * 0.12;
-
-      halo.add(ring);
     });
 
     const morphMeshes = [];
@@ -570,12 +545,6 @@ export default function JarvisHead({
           pose.jawOpen *
           0.035;
 
-      if (!reducedMotion.matches) {
-        halo.rotation.z +=
-          delta *
-          (currentStatus === "thinking" ? 0.2 : 0.04);
-      }
-
       wireMaterial.opacity =
         0.08 + pose.jawOpen * 0.07;
 
@@ -594,7 +563,6 @@ export default function JarvisHead({
       faceMaterial.dispose();
       detailMaterial.dispose();
       wireMaterial.dispose();
-      ringMaterial.dispose();
 
       renderer.dispose();
       renderer.forceContextLoss();

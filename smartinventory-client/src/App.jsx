@@ -1,13 +1,10 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 
 import Sidebar, { Icon } from "./components/Sidebar.jsx";
 import ProductsSection from "./components/ProductsSection.jsx";
 import AddProductForm from "./components/AddProductForm.jsx";
 import InventoryAssistant from "./components/InventoryAssistant.jsx";
 import InventoryOverview from "./components/InventoryOverview.jsx";
-import ChatPanel from "./components/ChatPanel.jsx";
-import JarvisControlPanel from "./components/JarvisControlPanel.jsx";
-import StockDocumentImport from "./components/StockDocumentImport.jsx";
 import GeminiLivePanel from "./components/GeminiLivePanel.jsx";
 
 import "./styles/jarvis.css";
@@ -16,174 +13,12 @@ import "./styles/inventory-assistant.css";
 import "./styles/overview-dashboard.css";
 
 function Overview({ refreshKey, onOpenInventory, onInventoryChanged }) {
-  const [voiceMode, setVoiceMode] = useState("normal");
-  const chatRef = useRef(null);
-  const chatAreaRef = useRef(null);
-
-  const [jarvisStatus, setJarvisStatus] = useState("idle");
-  const [draft, setDraft] = useState("");
-  const [voicePhase, setVoicePhase] = useState("idle");
-
-  function handleTranscript(text) {
-    const question = typeof text === "string" ? text.trim() : "";
-
-    if (!question) {
-      return;
-    }
-
-    if (
-      jarvisStatus !== "idle" ||
-      typeof chatRef.current?.sendVoice !== "function"
-    ) {
-      setDraft((previous) =>
-        [previous.trim(), question].filter(Boolean).join(" "),
-      );
-      return;
-    }
-
-    chatRef.current.sendVoice(question);
-  }
-
-  function chooseQuestion(question) {
-    setDraft(question);
-
-    chatAreaRef.current
-      ?.querySelector("textarea, input[type='text'], input:not([type])")
-      ?.focus();
-  }
-
-  const suggestions = [
-    ["Check stock", "මගේ inventory එකේ තොග තත්ත්වය පෙන්වන්න."],
-    ["Find a product", "භාණ්ඩයක් සොයා ගැනීමට උදව් කරන්න."],
-    ["Low-stock items", "තොග අඩු භාණ්ඩ මොනවාද?"],
-  ];
-
   return (
     <InventoryOverview
       refreshKey={refreshKey}
       onOpenInventory={onOpenInventory}
     >
-      <div aria-label="Voice mode" className="mb-3 flex gap-2">
-        {[
-          ["normal", "Normal"],
-          ["live", "Live voice"],
-        ].map(([value, label]) => (
-          <button
-            key={value}
-            type="button"
-            aria-pressed={voiceMode === value}
-            disabled={
-              voiceMode === "normal" &&
-              (jarvisStatus !== "idle" || voicePhase !== "idle")
-            }
-            onClick={() => setVoiceMode(value)}
-            className={`rounded-lg border px-4 py-2 text-sm disabled:opacity-40 ${voiceMode === value ? "border-cyan-400 bg-cyan-900 text-white" : "border-slate-700 text-slate-300"}`}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-      {voiceMode === "live" ? (
-        <GeminiLivePanel showHead onInventoryChanged={onInventoryChanged} />
-      ) : (
-        <div
-          className="
-          grid min-w-0 grid-cols-1 items-stretch gap-4
-          min-[1101px]:grid-cols-[minmax(0,1.08fr)_minmax(0,1fr)]
-        "
-        >
-          <div
-            className="
-            flex min-w-0 flex-col self-start overflow-hidden
-            rounded-2xl border border-[#1b394a] bg-[#051824]
-            [&>.jcp]:m-0! [&>.jcp]:w-full
-            [&>.jcp]:rounded-none! [&>.jcp]:border-0!
-            [&>.jcp]:shadow-none!
-          "
-          >
-            <JarvisControlPanel
-              status={jarvisStatus}
-              voicePhase={voicePhase}
-              onVoicePhaseChange={setVoicePhase}
-              onTranscript={handleTranscript}
-            />
-            <div
-              aria-label="Suggested questions"
-              className="
-              flex shrink-0 flex-wrap items-center justify-center gap-1.5
-              border-t border-[#143341] p-2.5
-            "
-            >
-              {suggestions.map(([label, question]) => (
-                <button
-                  key={label}
-                  type="button"
-                  disabled={jarvisStatus !== "idle" || voicePhase !== "idle"}
-                  onClick={() => chooseQuestion(question)}
-                  className="
-                  rounded-lg border border-[#2c5266] bg-[#082332]
-                  px-2.5 py-1.5 text-xs leading-6 text-cyan-100
-                  enabled:hover:border-cyan-400 enabled:hover:bg-[#10384a]
-                  focus-visible:outline-2 focus-visible:outline-offset-2
-                  focus-visible:outline-cyan-300
-                  disabled:cursor-not-allowed disabled:opacity-50
-                "
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div
-            ref={chatAreaRef}
-            className="
-            flex h-[420px] min-h-0 min-w-0 flex-col overflow-hidden
-            rounded-2xl border border-[#1b394a] bg-[#051824]
-            max-[600px]:h-[400px]
-            min-[1101px]:h-auto min-[1101px]:self-stretch
-            min-[1101px]:[contain:size]
-            [&>:first-child]:m-0! [&>:first-child]:flex
-            [&>:first-child]:h-auto! [&>:first-child]:max-h-none!
-            [&>:first-child]:min-h-0! [&>:first-child]:min-w-0
-            [&>:first-child]:w-full [&>:first-child]:flex-1
-            [&>:first-child]:flex-col [&>:first-child]:overflow-hidden!
-            [&>:first-child]:rounded-none! [&>:first-child]:border-0!
-            [&>:first-child]:bg-transparent! [&>:first-child]:shadow-none!
-            [&>:first-child>*]:shrink-0
-            [&_[class*='overflow-y-auto']]:flex-[1_1_0%]!
-            [&_[class*='overflow-y-auto']]:min-h-0!
-            [&_[class*='overflow-y-auto']]:max-h-none!
-            [&_[class*='overflow-y-auto']]:overflow-y-auto
-            [&_[class*='overflow-y-auto']]:overscroll-contain
-            [&_[class*='overflow-y-auto']]:[overflow-wrap:anywhere]
-            [&_[class*='overflow-y-auto']]:[scrollbar-width:thin]
-            [&_[class*='overflow-y-auto']]:[scrollbar-color:#2b5065_transparent]
-            [&_textarea]:h-16 [&_textarea]:min-h-14
-            [&_textarea]:max-h-[100px] [&_textarea]:resize-y
-            [&_textarea]:text-sm [&_textarea]:leading-relaxed
-            [&_input:not([type='range']):not([type='checkbox'])]:text-sm
-            [&_input:not([type='range']):not([type='checkbox'])]:leading-relaxed
-            [&_audio]:w-full [&_audio]:max-w-[360px]
-          "
-          >
-            <ChatPanel
-              voiceRef={chatRef}
-              input={draft}
-              onInputChange={setDraft}
-              voiceActive={voicePhase !== "idle"}
-              onStatusChange={setJarvisStatus}
-              onInventoryChanged={onInventoryChanged}
-            />
-
-            <div className="shrink-0 border-t border-slate-700 p-3">
-              <StockDocumentImport
-                onInventoryChanged={onInventoryChanged}
-                disabled={jarvisStatus !== "idle" || voicePhase !== "idle"}
-              />
-            </div>
-          </div>
-        </div>
-      )}
+      <GeminiLivePanel showHead onInventoryChanged={onInventoryChanged} />
     </InventoryOverview>
   );
 }

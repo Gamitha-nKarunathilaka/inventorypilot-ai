@@ -66,6 +66,7 @@ def live_config(instructions, tools, language):
                 ),
             ),
         ),
+        # Used internally to mark user turns, not displayed in the chat panel.
         input_audio_transcription=types.AudioTranscriptionConfig(),
         output_audio_transcription=types.AudioTranscriptionConfig(),
         realtime_input_config=types.RealtimeInputConfig(
@@ -142,7 +143,6 @@ class LiveBridge:
                 if not 1 <= len(text) <= 2000:
                     raise ValueError("Enter 1 to 2000 characters")
                 self.new_user_turn()
-                await self.send({"type": "transcript", "role": "user", "text": text})
                 await self.session.send_client_content(
                     turns=types.Content(role="user", parts=[types.Part(text=text)]),
                     turn_complete=True,
@@ -257,14 +257,9 @@ class LiveBridge:
                         self.user_turn_open = False
                         await self.send({"type": "interrupted"})
                     if content.input_transcription and content.input_transcription.text:
+                        # Keep turn accounting for the one-change-per-turn guard.
+                        # Only assistant replies are sent to the chat panel.
                         self.new_user_turn()
-                        await self.send(
-                            {
-                                "type": "transcript",
-                                "role": "user",
-                                "text": content.input_transcription.text,
-                            }
-                        )
                     if (
                         content.output_transcription
                         and content.output_transcription.text

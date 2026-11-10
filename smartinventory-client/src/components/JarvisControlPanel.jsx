@@ -1,5 +1,4 @@
 import JarvisHead from "./JarvisHead.jsx";
-import VoiceControls from "./VoiceControls.jsx";
 
 import "../styles/jarvis-control-panel.css";
 
@@ -16,26 +15,9 @@ const bars = [10, 18, 12, 26, 35, 22, 42, 30, 20, 28, 15, 9];
 
 export default function JarvisControlPanel({
   status = "idle",
-  voicePhase = "idle",
-  onVoicePhaseChange,
-  onTranscript,
   controls,
 }) {
-  const mode =
-    voicePhase === "processing"
-      ? "thinking"
-      : voicePhase === "starting" || voicePhase === "listening"
-        ? "listening"
-        : states.includes(status)
-          ? status
-          : "idle";
-
-  const caption =
-    voicePhase === "starting"
-      ? "Starting microphone…"
-      : voicePhase === "processing"
-        ? "Processing speech…"
-        : labels[mode];
+  const mode = states.includes(status) ? status : "idle";
 
   return (
     <section
@@ -61,11 +43,6 @@ export default function JarvisControlPanel({
       </header>
 
       <div className="jcp-scene">
-        <div className="jcp-radar" aria-hidden="true">
-          <div className="jcp-orbit jcp-orbit-outer" />
-          <div className="jcp-orbit jcp-orbit-inner" />
-        </div>
-
         <div className="jcp-face">
           <JarvisHead status={mode} />
         </div>
@@ -98,20 +75,9 @@ export default function JarvisControlPanel({
         <div className="jcp-platform" aria-hidden="true" />
       </div>
 
-      <p className="jcp-caption">{caption}</p>
+      <p className="jcp-caption">{labels[mode]}</p>
 
-      <div className="jcp-control-area">
-        {controls !== undefined ? (
-          controls
-        ) : (
-          <VoiceControls
-            phase={voicePhase}
-            onPhaseChange={onVoicePhaseChange}
-            onTranscript={onTranscript}
-            disabled={status !== "idle"}
-          />
-        )}
-      </div>
+      <div className="jcp-control-area">{controls}</div>
     </section>
   );
 }

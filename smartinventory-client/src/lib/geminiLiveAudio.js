@@ -1,3 +1,5 @@
+import { voiceLevel } from "./voiceAudio.js";
+
 export class GeminiLiveAudio {
   constructor({ onEvent, onPlayback, onClose, onError }) {
     this.callbacks = {
@@ -12,6 +14,9 @@ export class GeminiLiveAudio {
     this.muted = false;
     this.sources = new Set();
     this.nextTime = 0;
+    this.playbackAnalyser = null;
+    this.playbackSamples = null;
+    this.playbackFrame = null;
   }
 
   async start(language = "si") {
@@ -214,7 +219,7 @@ export class GeminiLiveAudio {
   }
 
   play(bytes) {
-    if (bytes.byteLength % 2) {
+    if (!bytes.byteLength || bytes.byteLength % 2) {
       throw new Error("Invalid reply audio.");
     }
 
@@ -239,11 +244,6 @@ export class GeminiLiveAudio {
         samples.getInt16(i * 2, true) / 32768;
     }
 
-    const source = this.context.createBufferSource();
-
-    source.buffer = buffer;
-    source.connect(this.context.destination);
-
     const start = Math.max(
       this.nextTime,
       this.context.currentTime + 0.04
@@ -255,6 +255,21 @@ export class GeminiLiveAudio {
       );
     }
 
+    if (!this.playbackAnalyser) {
+      // Measure the audio being played, not arriving network packets or the mic.
+      this.playbackAnalyser = this.context.createAnalyser();
+      this.playbackAnalyser.fftSize = 1024;
+      this.playbackSamples = new Float32Array(
+        this.playbackAnalyser.fftSize
+      );
+      this.playbackAnalyser.connect(this.context.destination);
+    }
+
+    const source = this.context.createBufferSource();
+
+    source.buffer = buffer;
+    source.connect(this.playbackAnalyser);
+
     this.nextTime = start + buffer.duration;
     this.sources.add(source);
 
@@ -262,13 +277,70 @@ export class GeminiLiveAudio {
       source.disconnect();
       this.sources.delete(source);
 
-      if (!this.sources.size && !this.closed) {
-        this.callbacks.onPlayback(false);
+      if (!this.sources.size) {
+        this.resetPlaybackLevel();
+        if (!this.closed) {
+          this.callbacks.onPlayback(false);
+        }
       }
     };
 
-    source.start(start);
+    try {
+      source.start(start);
+    } catch (error) {
+      source.onended = null;
+      source.disconnect();
+      this.sources.delete(source);
+      if (!this.sources.size) this.resetPlaybackLevel();
+      throw error;
+    }
+
+    this.startPlaybackMeter();
     this.callbacks.onPlayback(true);
+  }
+
+  startPlaybackMeter() {
+    // One meter for the whole playback queue, not a new loop per PCM chunk.
+    if (this.playbackFrame !== null) return;
+
+    const measure = () => {
+      this.playbackFrame = null;
+      if (
+        this.closed ||
+        !this.sources.size ||
+        !this.playbackAnalyser ||
+        this.context.state !== "running"
+      ) {
+        voiceLevel.current = 0;
+        return;
+      }
+
+      this.playbackAnalyser.getFloatTimeDomainData(
+        this.playbackSamples
+      );
+
+      let energy = 0;
+      for (const sample of this.playbackSamples) {
+        energy += sample * sample;
+      }
+
+      const rms = Math.sqrt(energy / this.playbackSamples.length);
+      const target = Math.min(1, Math.max(0, rms - 0.006) * 8);
+
+      // JarvisHead already reads this value for jaw, mouth and head movement.
+      voiceLevel.current = voiceLevel.current * 0.6 + target * 0.4;
+      this.playbackFrame = requestAnimationFrame(measure);
+    };
+
+    this.playbackFrame = requestAnimationFrame(measure);
+  }
+
+  resetPlaybackLevel() {
+    if (this.playbackFrame !== null) {
+      cancelAnimationFrame(this.playbackFrame);
+      this.playbackFrame = null;
+    }
+    voiceLevel.current = 0;
   }
 
   clearPlayback() {
@@ -286,6 +358,7 @@ export class GeminiLiveAudio {
 
     this.sources.clear();
     this.nextTime = 0;
+    this.resetPlaybackLevel();
 
     if (!this.closed) {
       this.callbacks.onPlayback(false);
@@ -316,6 +389,9 @@ export class GeminiLiveAudio {
     window.clearTimeout(this.timer);
 
     this.clearPlayback();
+    this.playbackAnalyser?.disconnect();
+    this.playbackAnalyser = null;
+    this.playbackSamples = null;
 
     if (this.capture) {
       this.capture.port.onmessage = null;
